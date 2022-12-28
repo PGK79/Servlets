@@ -25,15 +25,15 @@ public class MainServlet extends HttpServlet {
             final var PATH = req.getRequestURI();
             final var METHOD = req.getMethod();
             final var REQUEST_PATH = "/api/posts";
-            final var REQUEST_PATH_ID = "/api/posts/\\d+";
-            final var ID = receiveId(PATH,REQUEST_PATH_ID);
+            final boolean PATH_WITH_ID = PATH.matches("/api/posts/\\d+"); //var затрудняет восприятие
+            final var ID = receiveId(PATH, PATH_WITH_ID);
 
             // primitive routing
             if (METHOD.equals("GET") && PATH.equals(REQUEST_PATH)) {
                 controller.all(resp);
                 return;
             }
-            if (METHOD.equals("GET") && PATH.matches(REQUEST_PATH_ID)) {
+            if (METHOD.equals("GET") && PATH_WITH_ID) {
                 // easy way
                 controller.getById(ID, resp);
                 return;
@@ -42,7 +42,7 @@ public class MainServlet extends HttpServlet {
                 controller.save(req.getReader(), resp);
                 return;
             }
-            if (METHOD.equals("DELETE") && PATH.matches(REQUEST_PATH_ID)) {
+            if (METHOD.equals("DELETE") && PATH_WITH_ID) {
                 // easy way
                 controller.removeById(ID, resp);
                 return;
@@ -53,9 +53,10 @@ public class MainServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
-    public long receiveId(String path, String requestPathId){
-        if (path.equals(requestPathId)) {
+
+    public long receiveId(String path, boolean pathWithId) {
+        if (pathWithId) {
             return Long.parseLong(path.substring(path.lastIndexOf("/") + 1));
-        }else return 0;
+        } else return 0;
     }
 }
