@@ -25,22 +25,25 @@ public class MainServlet extends HttpServlet {
             final var path = req.getRequestURI();
             final var method = req.getMethod();
             final var id = Long.parseLong(path.substring(path.lastIndexOf("/") + 1));
+            final var requestPath = "/api/posts";
+            final var requestPathWithId = "/api/posts/\\d+";
+
             // primitive routing
-            if (method.equals("GET") && path.equals("/api/posts")) {
+            if (method.equals("GET") && path.equals(requestPath)) {
                 controller.all(resp);
                 return;
             }
-            if (method.equals("GET") && path.matches("/api/posts/\\d+")) {
+            if (method.equals("GET") && path.matches(requestPathWithId)) {
                 // easy way
 
                 controller.getById(id, resp);
                 return;
             }
-            if (method.equals("POST") && path.equals("/api/posts")) {
+            if (method.equals("POST") && path.equals(requestPath)) {
                 controller.save(req.getReader(), resp);
                 return;
             }
-            if (method.equals("DELETE") && path.matches("/api/posts/\\d+")) {
+            if (method.equals("DELETE") && path.matches(requestPathWithId)) {
                 // easy way
                 controller.removeById(id, resp);
                 return;
