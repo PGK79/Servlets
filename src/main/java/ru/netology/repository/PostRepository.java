@@ -2,24 +2,42 @@ package ru.netology.repository;
 
 import ru.netology.model.Post;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 // Stub
 public class PostRepository {
-  public List<Post> all() {
-    return Collections.emptyList();
-  }
+    private final Map<Long, Post> allPosts = new ConcurrentHashMap<>();
+    private final AtomicLong counter = new AtomicLong(0);
 
-  public Optional<Post> getById(long id) {
-    return Optional.empty();
-  }
+    public Map<Long, Post> all() { //мапа показалась удобней, быстрее и безопасней списка
+        return allPosts;
+    }
 
-  public Post save(Post post) {
-    return post;
-  }
+    public Optional<Post> getById(long id) {
+        return Optional.of(allPosts.get(id));
+    }
 
-  public void removeById(long id) {
-  }
+    public Post save(Post post) {
+        long idInList = counter.getAndIncrement();
+
+        if (post.getId() == 0) {
+            post.setId(idInList + 1);
+            allPosts.put(idInList + 1, post);
+        } else {
+            allPosts.put(post.getId(), post);
+        }
+        return post;
+    }
+
+    public void removeById(long id) {
+        if (allPosts.containsKey(id)) {
+            allPosts.remove(id);
+        } else {
+            System.out.println("Запись с id = " + id + "не найдена");
+        }
+
+    }
 }
