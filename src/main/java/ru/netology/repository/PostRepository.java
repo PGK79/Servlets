@@ -33,11 +33,6 @@ public class PostRepository {
     }
 
     public void removeById(long id) {
-        if (allPosts.containsKey(id)) {
-            allPosts.remove(id);
-        } else {
-            System.out.println("Запись с id = " + id + "не найдена");
-        }
-
+        allPosts.remove(id);
     }
 }

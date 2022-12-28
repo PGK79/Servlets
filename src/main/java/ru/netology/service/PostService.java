@@ -18,11 +18,10 @@ public class PostService {
     }
 
     public Post getById(long id) {
-        if (id <= all().size()) {
+        if (id <= all().size() && all().containsKey(id)) {
             return repository.getById(id).orElseThrow(NotFoundException::new);
-        } else { // профилактика NotFoundException при существующих id
-            return new Post(0, "Введено не корректное ID. Измените запрос, "
-                    + "используйте диапазон id от 1 до " + all().size());
+        } else {
+            return new Post(0, "Сообщения с таким ID не существует");
         }
     }
 
@@ -30,12 +29,16 @@ public class PostService {
         if (post.getId() <= all().size()) {
             return repository.save(post);
         } else {
-            return new Post(0, "Введено не корректное ID. Измените запрос, "
-                    + "используйте диапазон id от 1 до " + all().size());
+            return new Post(0, "Введено не корректное ID. Измените ID");
         }
     }
 
-    public void removeById(long id) {
-        repository.removeById(id);
+    public String removeById(long id) {
+        if (all().containsKey(id)) {
+            repository.removeById(id);
+            return "Пост удален";
+        } else {
+            return "Пост не найден";
+        }
     }
 }
