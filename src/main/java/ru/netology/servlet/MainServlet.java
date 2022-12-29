@@ -10,41 +10,37 @@ import javax.servlet.http.HttpServletResponse;
 
 public class MainServlet extends HttpServlet {
     private PostController controller;
+    private static final PostRepository REPOSITORY = new PostRepository();
+    private static final PostService SERVICE = new PostService(REPOSITORY);
+    private static final String REQUEST_PATH = "/api/posts";
 
     @Override
     public void init() {
-        final var REPOSITORY = new PostRepository();
-        final var SERVICE = new PostService(REPOSITORY);
         controller = new PostController(SERVICE);
     }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) {
-        // если деплоились в root context, то достаточно этого
         try {
-            final var PATH = req.getRequestURI();
-            final var METHOD = req.getMethod();
-            final var REQUEST_PATH = "/api/posts";
-            final boolean PATH_WITH_ID = PATH.matches("/api/posts/\\d+"); //var затрудняет восприятие
-            final var ID = receiveId(PATH, PATH_WITH_ID);
+            final var path = req.getRequestURI();
+            final var method = req.getMethod();
+            final boolean pathWithId = path.matches("/api/posts/\\d+");
+            final var id = receiveId(path, pathWithId);
 
-            // primitive routing
-            if (METHOD.equals("GET") && PATH.equals(REQUEST_PATH)) {
+            if (method.equals("GET") && path.equals(REQUEST_PATH)) {
                 controller.all(resp);
                 return;
             }
-            if (METHOD.equals("GET") && PATH_WITH_ID) {
-                // easy way
-                controller.getById(ID, resp);
+            if (method.equals("GET") && pathWithId) {
+                controller.getById(id, resp);
                 return;
             }
-            if (METHOD.equals("POST") && PATH.equals(REQUEST_PATH)) {
+            if (method.equals("POST") && path.equals(REQUEST_PATH)) {
                 controller.save(req.getReader(), resp);
                 return;
             }
-            if (METHOD.equals("DELETE") && PATH_WITH_ID) {
-                // easy way
-                controller.removeById(ID, resp);
+            if (method.equals("DELETE") && pathWithId) {
+                controller.removeById(id, resp);
                 return;
             }
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
