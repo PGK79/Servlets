@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -jar artifacts/webapp-runner.jar --port $PORT artifacts/servletapp.war
+web: java $JAVA_OPTS -jar target/dependency/webapp-runner.jar --port $PORT target/servlets-1.0-SNAPSHOT.war
