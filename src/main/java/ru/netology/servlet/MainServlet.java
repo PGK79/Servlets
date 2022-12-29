@@ -13,6 +13,7 @@ public class MainServlet extends HttpServlet {
     private static final PostRepository REPOSITORY = new PostRepository();
     private static final PostService SERVICE = new PostService(REPOSITORY);
     private static final String REQUEST_PATH = "/api/posts";
+    private static final String REQUEST_PATH_WITH_ID = "/api/posts/\\d+";
 
     @Override
     public void init() {
@@ -24,7 +25,7 @@ public class MainServlet extends HttpServlet {
         try {
             final var path = req.getRequestURI();
             final var method = req.getMethod();
-            final boolean pathWithId = path.matches("/api/posts/\\d+");
+            final boolean pathWithId = path.matches(REQUEST_PATH_WITH_ID);
             final var id = receiveId(path, pathWithId);
 
             if (method.equals("GET") && path.equals(REQUEST_PATH)) {
