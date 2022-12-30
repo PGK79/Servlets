@@ -10,14 +10,14 @@ import javax.servlet.http.HttpServletResponse;
 
 public class MainServlet extends HttpServlet {
     private PostController controller;
-    private static final PostRepository REPOSITORY = new PostRepository();
-    private static final PostService SERVICE = new PostService(REPOSITORY);
     private static final String REQUEST_PATH = "/api/posts";
     private static final String REQUEST_PATH_WITH_ID = "/api/posts/\\d+";
 
     @Override
     public void init() {
-        controller = new PostController(SERVICE);
+        final var repository = new PostRepository();
+        final var service = new PostService(repository);
+        controller = new PostController(service);
     }
 
     @Override
